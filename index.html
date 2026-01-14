@@ -2,40 +2,54 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Beautiful Timer with Start Button</title>
+<title>Mini Timer White</title>
 <style>
-  /* --- CẤU HÌNH MÀU SẮC --- */
+  /* --- CẤU HÌNH MÀU SẮC & KÍCH THƯỚC --- */
   :root {
-    --bg-color: #0f172a;       /* Nền tối */
-    --ring-color-start: #00c6ff; 
-    --ring-color-end: #0072ff;
-    --ring-bg: #1e293b;
-    --text-color: #ffffff;
-    --btn-color: #00c6ff;      /* Màu nút bấm */
+    --bg-color: #ffffff;       /* Nền trắng tinh */
+    --ring-color-start: #3b82f6; /* Xanh dương hiện đại */
+    --ring-color-end: #2563eb;
+    --ring-bg: #e5e7eb;        /* Màu xám nhạt cho vòng nền */
+    --text-color: #1f2937;     /* Màu chữ đen xám (dễ đọc) */
+    --size: 200px;             /* KÍCH THƯỚC ĐỒNG HỒ (Nhỏ) */
   }
 
   body {
     margin: 0; padding: 0; height: 100vh;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    background-color: var(--bg-color); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden;
+    background-color: var(--bg-color); 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    overflow: hidden;
   }
 
-  /* CONTAINER CHÍNH */
+  /* KHUNG CHỨA (Hình vuông 200px) */
   .timer-container {
-    position: relative; width: 320px; height: 320px;
+    position: relative; 
+    width: var(--size); height: var(--size);
     display: flex; justify-content: center; align-items: center;
   }
 
   /* SVG VÒNG TRÒN */
   svg {
-    width: 100%; height: 100%; transform: rotate(-90deg);
-    filter: drop-shadow(0 0 15px rgba(0, 198, 255, 0.3));
+    width: 100%; height: 100%; 
+    transform: rotate(-90deg); /* Xoay để bắt đầu từ đỉnh 12h */
   }
-  .ring-bg { fill: none; stroke: var(--ring-bg); stroke-width: 12; }
+  
+  /* Vòng tròn nền (Màu xám) */
+  .ring-bg { 
+    fill: none; 
+    stroke: var(--ring-bg); 
+    stroke-width: 8; /* Viền mỏng lại cho tinh tế */
+  }
+  
+  /* Vòng tròn chạy (Màu xanh) */
   .ring-progress {
-    fill: none; stroke: url(#gradientColor);
-    stroke-width: 12; stroke-linecap: round;
-    stroke-dasharray: 942; /* 2 * pi * 150 */
+    fill: none; 
+    stroke: url(#gradientColor);
+    stroke-width: 8; 
+    stroke-linecap: round;
+    /* Chu vi = 2 * pi * r (r=90) => ~565 */
+    stroke-dasharray: 565; 
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 1s linear;
   }
@@ -46,70 +60,76 @@
     transition: opacity 0.3s;
   }
   #time-display {
-    font-size: 3.5rem; font-weight: 700; letter-spacing: 2px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    font-size: 2.2rem; /* Chữ nhỏ lại phù hợp khung 200px */
+    font-weight: 700; 
+    letter-spacing: 1px;
+    margin-bottom: 2px;
   }
   .label {
-    font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; margin-top: -5px;
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    color: #6b7280; /* Màu xám ghi */
+    letter-spacing: 1px; 
+    font-weight: 600;
   }
 
   /* NÚT BẮT ĐẦU (Nằm đè lên trên) */
   #start-btn {
     position: absolute; z-index: 10;
-    width: 140px; height: 140px; border-radius: 50%;
+    width: 80px; height: 80px; /* Nút nhỏ gọn */
+    border-radius: 50%;
     border: none; outline: none; cursor: pointer;
     background: linear-gradient(135deg, var(--ring-color-start), var(--ring-color-end));
-    box-shadow: 0 0 20px rgba(0, 198, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); /* Bóng đổ nhẹ */
     
-    /* Chữ bên trong nút */
-    color: white; font-size: 1.2rem; font-weight: bold; text-transform: uppercase;
+    color: white; font-weight: bold;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: all 0.3s ease; animation: float 3s ease-in-out infinite;
+    transition: all 0.2s ease;
   }
 
   #start-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 40px rgba(0, 198, 255, 0.7);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
   }
   
-  #start-btn span { font-size: 2rem; margin-bottom: 5px; } /* Icon Play */
+  #start-btn span { font-size: 1.5rem; margin-left: 4px; } /* Icon Play */
 
-  /* Hiệu ứng ẩn nút khi bấm */
+  /* Ẩn nút khi bấm */
   .hidden {
     opacity: 0; pointer-events: none; transform: scale(0.5) !important;
   }
 
   /* Hiệu ứng khẩn cấp (Đỏ) */
   .urgent {
-    --ring-color-start: #ff0844; --ring-color-end: #ffb199;
-    animation: pulse 1.5s infinite;
+    --ring-color-start: #ef4444; --ring-color-end: #dc2626;
   }
-  @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
-  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  
+  /* Rung nhẹ khi sắp hết giờ */
+  .shake { animation: shake 0.5s infinite; }
+  @keyframes shake { 0% { transform: rotate(-90deg) translate(1px, 1px); } 50% { transform: rotate(-90deg) translate(-1px, -1px); } 100% { transform: rotate(-90deg) translate(1px, 1px); } }
 
 </style>
 </head>
 <body>
 
   <div class="timer-container" id="main-container">
-    <svg>
+    <svg id="svg-ring">
       <defs>
         <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="var(--ring-color-start)" />
           <stop offset="100%" stop-color="var(--ring-color-end)" />
         </linearGradient>
       </defs>
-      <circle class="ring-bg" cx="160" cy="160" r="150"></circle>
-      <circle class="ring-progress" id="progress-ring" cx="160" cy="160" r="150"></circle>
+      <circle class="ring-bg" cx="100" cy="100" r="90"></circle>
+      <circle class="ring-progress" id="progress-ring" cx="100" cy="100" r="90"></circle>
     </svg>
     
-    <div class="timer-text" style="opacity: 0.3">
-      <div id="time-display">150:00</div>
+    <div class="timer-text" style="opacity: 0.2"> <div id="time-display">150:00</div>
       <div class="label">Phút</div>
     </div>
 
     <button id="start-btn" onclick="startTimer()">
-      <span>▶</span> BẮT ĐẦU
+      <span>▶</span>
     </button>
   </div>
 
@@ -120,31 +140,26 @@
 
   let timeRemaining = SET_MINUTES * 60;
   const totalSeconds = SET_MINUTES * 60;
-  const circumference = 942; // Chu vi mới (2 * pi * 150)
+  const circumference = 565; // Chu vi (2 * pi * 90)
   
   const progressRing = document.getElementById('progress-ring');
   const timeDisplay = document.getElementById('time-display');
   const mainContainer = document.getElementById('main-container');
+  const svgRing = document.getElementById('svg-ring');
   const startButton = document.getElementById('start-btn');
   const timerTextDiv = document.querySelector('.timer-text');
 
-  // Khởi tạo hiển thị ban đầu
+  // Set hiển thị ban đầu
   timeDisplay.textContent = `${SET_MINUTES}:00`;
 
   function startTimer() {
-    // 1. Ẩn nút Bắt đầu
     startButton.classList.add('hidden');
-    
-    // 2. Làm rõ số thời gian lên
     timerTextDiv.style.opacity = '1';
-
-    // 3. Bắt đầu tính giờ
     runCountdown();
   }
 
   function runCountdown() {
-    // Cập nhật ngay lập tức lần đầu
-    updateUI();
+    updateUI(); // Cập nhật ngay
 
     const interval = setInterval(() => {
       if (timeRemaining > 0) {
@@ -161,24 +176,26 @@
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
 
-    // Cập nhật số
-    timeDisplay.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
     // Cập nhật vòng tròn
     const offset = circumference - (timeRemaining / totalSeconds) * circumference;
     progressRing.style.strokeDashoffset = offset;
 
-    // Cảnh báo khi còn dưới 5 phút (300s)
+    // Cảnh báo đỏ khi còn dưới 5 phút
     if (timeRemaining < 300 && timeRemaining > 0) {
         mainContainer.classList.add('urgent');
+        svgRing.classList.add('shake'); // Rung nhẹ tạo áp lực
     }
   }
 
   function finishTimer() {
-    timeDisplay.textContent = "HẾT GIỜ";
+    timeDisplay.textContent = "HẾT";
+    timeDisplay.style.fontSize = "3rem"; // Chữ to lên
+    document.querySelector('.label').style.display = 'none';
     progressRing.style.strokeDashoffset = circumference;
-    mainContainer.classList.remove('urgent');
-    timerTextDiv.style.color = "#ff4444"; // Đổi màu chữ thành đỏ
+    svgRing.classList.remove('shake');
+    timerTextDiv.style.color = "#dc2626"; 
   }
 </script>
 
